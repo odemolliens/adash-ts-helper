@@ -45,7 +45,7 @@ test('isCDNOperational', async (t) => {
       ],
     });
 
-  let operational = await CocoaPodsStatusHelper.isCDNOperational();
+  const operational = await CocoaPodsStatusHelper.isCDNOperational();
   t.true(operational);
 
   process.env.LOG_ERRORS = '0';
@@ -54,6 +54,6 @@ test('isCDNOperational', async (t) => {
     .query(IGNORE_QUERY_PARAMS)
     .replyWithError('Test error handling');
 
-  operational = await CocoaPodsStatusHelper.isCDNOperational();
-  t.false(operational);
+  const notOperational = await CocoaPodsStatusHelper.isCDNOperational();
+  t.false(notOperational);
 });

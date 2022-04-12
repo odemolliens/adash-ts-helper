@@ -1,5 +1,6 @@
 import { simpleLogger as logger } from '../debug';
 import { NetworkHelper } from '../network';
+
 import { INotificator } from './notifications_helper';
 
 type SlackNotificatorOpts = {

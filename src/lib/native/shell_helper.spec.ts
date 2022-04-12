@@ -4,11 +4,11 @@ import { shell } from '.';
 
 test('runCmd', async (t) => {
   const shDryRun = shell({ dryRun: true });
-  let output = shDryRun`pwd`;
-  t.is(output, 'dryRun pwd');
+  const pwd = shDryRun`pwd`;
+  t.is(pwd, 'dryRun pwd');
 
   const sh = shell();
   const filename = __filename.split('/').pop();
-  output = sh`basename ${filename}`;
-  t.is(output.trimEnd(), filename);
+  const basename = sh`basename ${filename}`;
+  t.is(basename.trimEnd(), filename);
 });

@@ -16,7 +16,6 @@ export const iEquals = (str1: string, str2: string) =>
  *
  * @param object
  */
-// eslint-disable-next-line functional/no-return-void
 export const requireAndLogsKeys = (
   object: Record<string, unknown>,
   logger?: ILogger

@@ -34,7 +34,7 @@ export type PipelineSchedule = {
   readonly id: string;
 };
 
-export type Job = {};
+export type Job = Record<string, unknown>;
 
 export type MergeRequest = {
   readonly target_branch: string;

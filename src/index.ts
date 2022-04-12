@@ -1,4 +1,5 @@
 export * from './lib/bitrise';
+export * from './lib/codemagic';
 export * from './lib/debug';
 export * from './lib/gitlab';
 export * from './lib/native';

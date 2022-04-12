@@ -28,10 +28,10 @@ export const download = async (url: string, path: string) => {
  * @param data
  * @param path
  */
-export const writeFile = async (data: any, path: string) => {
+export const writeFile = async (data: unknown, path: string) => {
   logger().debug('Write file', path, 'with data', data);
   data = typeof data === 'string' ? data : JSON.stringify(data);
-  await writeFilePromise(path, data);
+  await writeFilePromise(path, data as string);
 };
 
 /**

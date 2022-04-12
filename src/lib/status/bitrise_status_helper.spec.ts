@@ -46,7 +46,7 @@ test('isBuildProcessingOperational', async (t) => {
       ],
     });
 
-  let operational = await BitriseStatusHelper.isBuildProcessingOperational();
+  const operational = await BitriseStatusHelper.isBuildProcessingOperational();
   t.true(operational);
 
   process.env.LOG_ERRORS = '0';
@@ -56,8 +56,9 @@ test('isBuildProcessingOperational', async (t) => {
     .query(IGNORE_QUERY_PARAMS)
     .replyWithError('Test error handling');
 
-  operational = await BitriseStatusHelper.isBuildProcessingOperational();
-  t.false(operational);
+  const notOperational =
+    await BitriseStatusHelper.isBuildProcessingOperational();
+  t.false(notOperational);
 });
 
 test('getStepIssueStatus', async (t) => {

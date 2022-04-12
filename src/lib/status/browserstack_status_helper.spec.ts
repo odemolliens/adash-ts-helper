@@ -46,7 +46,7 @@ test('isBuildProcessingOperational', async (t) => {
       ],
     });
 
-  let operational = await BrowserStackStatusHelper.isLiveOperational();
+  const operational = await BrowserStackStatusHelper.isLiveOperational();
   t.true(operational);
 
   process.env.LOG_ERRORS = '0';
@@ -56,8 +56,8 @@ test('isBuildProcessingOperational', async (t) => {
     .query(IGNORE_QUERY_PARAMS)
     .replyWithError('Test error handling');
 
-  operational = await BrowserStackStatusHelper.isLiveOperational();
-  t.false(operational);
+  const notOperational = await BrowserStackStatusHelper.isLiveOperational();
+  t.false(notOperational);
 });
 
 test('getAutomateStatus', async (t) => {
@@ -91,7 +91,7 @@ test('isStepIssueOperational', async (t) => {
       ],
     });
 
-  let operational = await BrowserStackStatusHelper.isAutomateOperational();
+  const operational = await BrowserStackStatusHelper.isAutomateOperational();
   t.true(operational);
 
   process.env.LOG_ERRORS = '0';
@@ -101,6 +101,6 @@ test('isStepIssueOperational', async (t) => {
     .query(IGNORE_QUERY_PARAMS)
     .replyWithError('Test error handling');
 
-  operational = await BrowserStackStatusHelper.isAutomateOperational();
-  t.false(operational);
+  const notOperational = await BrowserStackStatusHelper.isAutomateOperational();
+  t.false(notOperational);
 });
