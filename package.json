@@ -1,7 +1,7 @@
 {
   "name": "adash-ts-helper",
   "private": false,
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Shared library for Adash",
   "main": "build/main/index.js",
   "typings": "build/main/index.d.ts",
