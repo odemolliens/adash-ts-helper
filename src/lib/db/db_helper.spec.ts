@@ -38,4 +38,12 @@ test('simpleDb', async (t) => {
   const today = new Date();
   await db.filter((row) => row.createdAt >= today);
   t.is(db.data().length, 0);
+
+  // insertAll
+  await db.insertAll([{ createdAt: new Date(), foo: 'bar1' }, { createdAt: new Date(), foo: 'bar2' }]);
+  t.is(db.data().length, 2);
+
+  // replace
+  await db.replace([{ createdAt: new Date(), foo: 'bar2' }]);
+  t.is(db.data().length, 1);
 });

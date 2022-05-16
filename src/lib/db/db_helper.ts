@@ -9,6 +9,8 @@ type DBOpts = {
 export type IDB<T> = {
   readonly init: () => Promise<void>;
   readonly insert: (row: T) => Promise<void>;
+  readonly insertAll: (rows: T[]) => Promise<void>;
+  readonly replace: (rows: T[]) => Promise<void>;
   readonly reset: () => Promise<void>;
   readonly filter: (cb: (row: T) => boolean) => Promise<readonly T[]>;
   readonly commit: () => Promise<void>;
@@ -44,6 +46,24 @@ const DB = <Type>(opts: DBOpts): IDB<Type> => {
     async insert(row: Type) {
       logger?.debug('Insert new row', row);
       db = [...db, row];
+    },
+
+    /**
+     * Inserts rows
+     * @param rows
+     */
+    async insertAll(rows: Type[]) {
+      logger?.debug('Insert new row', rows);
+      db = [...db, ...rows];
+    },
+
+    /**
+     * Replaces current db
+     * @param rows
+     */
+    async replace(rows: Type[]) {
+      logger?.debug('Insert new row', rows);
+      db = rows;
     },
 
     /**
