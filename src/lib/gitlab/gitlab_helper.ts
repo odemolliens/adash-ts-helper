@@ -19,7 +19,7 @@ export const PROJECT_NEW_ISSUE_ENDPOINT = (projectId: string) =>
 export const PROJECT_ISSUES_ENDPOINT = (projectId: string) =>
   `/projects/${projectId}/issues`;
 
-const SCOPE_NOT_FINISHED = ['running', 'pending', 'created'];
+const SCOPE_NOT_FINISHED = ['running', 'pending'];
 const STATUS_RUNNING = 'running';
 const STATUS_PENDING = 'pending';
 export const MERGE_REQUEST_STATE_OPENED = 'opened';
