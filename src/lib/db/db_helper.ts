@@ -1,16 +1,19 @@
+import jsonpack from 'jsonpack/main';
+
 import { LogHelper } from '../debug';
 import { FileHelper } from '../native';
 
 type DBOpts = {
   readonly path: string;
   readonly logger?: LogHelper.ILogger;
+  readonly compress?: boolean;
 };
 
 export type IDB<T> = {
   readonly init: () => Promise<void>;
   readonly insert: (row: T) => Promise<void>;
-  readonly insertAll: (rows: T[]) => Promise<void>;
-  readonly replace: (rows: T[]) => Promise<void>;
+  readonly insertAll: (rows: readonly T[]) => Promise<void>;
+  readonly replace: (rows: readonly T[]) => Promise<void>;
   readonly reset: () => Promise<void>;
   readonly filter: (cb: (row: T) => boolean) => Promise<readonly T[]>;
   readonly commit: () => Promise<void>;
@@ -22,7 +25,7 @@ const DB = <Type>(opts: DBOpts): IDB<Type> => {
 
   logger?.info(`Opening db`, opts.path);
 
-  let db: readonly Type[];
+  let db: readonly Type[] = [];
 
   return {
     /**
@@ -30,8 +33,12 @@ const DB = <Type>(opts: DBOpts): IDB<Type> => {
      */
     async init() {
       try {
-        db = await FileHelper.readJSONFile(opts.path);
+        const content = opts.compress
+          ? (await FileHelper.readFile(opts.path)).toString()
+          : await FileHelper.readJSONFile(opts.path);
+        db = opts.compress ? jsonpack.unpack(content) : content;
       } catch (e) {
+        console.log(e);
         logger?.debug("DB file doesn't exist, creating a new one", e);
         db = [];
       } finally {
@@ -52,7 +59,7 @@ const DB = <Type>(opts: DBOpts): IDB<Type> => {
      * Inserts rows
      * @param rows
      */
-    async insertAll(rows: Type[]) {
+    async insertAll(rows: readonly Type[]) {
       logger?.debug('Insert new row', rows);
       db = [...db, ...rows];
     },
@@ -61,7 +68,7 @@ const DB = <Type>(opts: DBOpts): IDB<Type> => {
      * Replaces current db
      * @param rows
      */
-    async replace(rows: Type[]) {
+    async replace(rows: readonly Type[]) {
       logger?.debug('Insert new row', rows);
       db = rows;
     },
@@ -92,7 +99,8 @@ const DB = <Type>(opts: DBOpts): IDB<Type> => {
      */
     async commit() {
       logger?.info('Commit changes');
-      await FileHelper.writeFile(db, opts.path);
+      const content = opts.compress ? jsonpack.pack(db) : db;
+      await FileHelper.writeFile(content, opts.path);
     },
 
     /**
