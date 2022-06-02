@@ -1,12 +1,19 @@
 import { ILogger } from '../debug/log_helper';
-import { NetworkHelper } from '../network';
+import { NetworkHelper, NetworkUtils } from '../network';
 
 export const BASE_URL = 'https://api.bitrise.io/v0.1';
+
 export const BUILDS_ENDPOINT = `/builds`;
+
 export const APP_BUILDS_ENDPOINT = (appSlug: string) =>
   `/apps/${appSlug}/builds`;
+
 export const ABORT_APP_BUILD_ENDPOINT = (appSlug: string, buildSlug: string) =>
   `/apps/${appSlug}/builds/${buildSlug}/abort`;
+
+export const ARTIFACTS_ENDPOINT = (appSlug: string, buildSlug: string) => `/apps/${appSlug}/builds/${buildSlug}/artifacts`
+
+export const ARTIFACT_ENDPOINT = (appSlug: string, buildSlug: string, artifactSlug: string) => `/apps/${appSlug}/builds/${buildSlug}/artifacts/${artifactSlug}`
 
 const STATUS_NOT_FINISHED = 0;
 
@@ -158,6 +165,53 @@ const BitriseHelper = (opts?: BitriseHelperOpts) => {
     return data.length;
   }
 
+  async function downloadBuildArtifactByName(appSlug: string, buildSlug: string, artifactName: string, downloadPath: string, params?: Record<string, unknown>,
+    headers?: Record<string, string>) {
+
+    logger?.debug(`Download Bitrise build artifact by name ${appSlug}/${buildSlug}/${artifactName}`);
+
+    const { data } = await NetworkHelper.get(
+      `${BASE_URL}${ARTIFACTS_ENDPOINT(appSlug, buildSlug)}`,
+      {
+        headers: {
+          ...defaultHeaders,
+          ...headers,
+        },
+        params: { ...params, status: STATUS_NOT_FINISHED },
+      })
+
+    logger?.debug(data)
+
+    const artifactSlug = (data.data as Record<string, any>[]).find(artifact => artifact.title === artifactName)?.slug
+
+    if (artifactSlug) {
+      return downloadBuildArtifactBySlug(appSlug, buildSlug, artifactSlug, downloadPath)
+    }
+
+    throw new Error(`No artifact found for ${appSlug}/${buildSlug}/${artifactName}`)
+  }
+
+  async function downloadBuildArtifactBySlug(appSlug: string, buildSlug: string, artifactSlug: string, downloadPath: string, params?: Record<string, unknown>,
+    headers?: Record<string, string>) {
+    logger?.debug(`Download Bitrise build artifact by slug ${appSlug}/${buildSlug}/${artifactSlug}`);
+
+    const { data } = await NetworkHelper.get(
+      `${BASE_URL}${ARTIFACT_ENDPOINT(appSlug, buildSlug, artifactSlug)}`,
+      {
+        headers: {
+          ...defaultHeaders,
+          ...headers,
+        },
+        params: { ...params, status: STATUS_NOT_FINISHED },
+      })
+
+    if (data.data?.expiring_download_url) {
+      await NetworkUtils.downloadFile(data.data?.expiring_download_url, downloadPath)
+    }
+
+    logger?.debug(`Saving artifact to  ${downloadPath}`);
+  }
+
   return {
     getBuildQueue,
     getBuildQueueSize,
@@ -165,6 +219,8 @@ const BitriseHelper = (opts?: BitriseHelperOpts) => {
     getBuildQueueByAppSlug,
     getBuildQueueSizeByAppSlug,
     cancelAppBuildBySlug,
+    downloadBuildArtifactByName,
+    downloadBuildArtifactBySlug,
     opts,
   };
 };

@@ -38,7 +38,6 @@ const DB = <Type>(opts: DBOpts): IDB<Type> => {
           : await FileHelper.readJSONFile(opts.path);
         db = opts.compress ? jsonpack.unpack(content) : content;
       } catch (e) {
-        console.log(e);
         logger?.debug("DB file doesn't exist, creating a new one", e);
         db = [];
       } finally {
